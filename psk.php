@@ -119,10 +119,69 @@ return $lat .", ".$lng;
 }
 
 
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+/*::                                                                         :*/
+/*::  This routine calculates the distance between two points (given the     :*/
+/*::  latitude/longitude of those points). It is being used to calculate     :*/
+/*::  the distance between two locations using GeoDataSource(TM) Products    :*/
+/*::                                                                         :*/
+/*::  Definitions:                                                           :*/
+/*::    South latitudes are negative, east longitudes are positive           :*/
+/*::                                                                         :*/
+/*::  Passed to function:                                                    :*/
+/*::    lat1, lon1 = Latitude and Longitude of point 1 (in decimal degrees)  :*/
+/*::    lat2, lon2 = Latitude and Longitude of point 2 (in decimal degrees)  :*/
+/*::    unit = the unit you desire for results                               :*/
+/*::           where: 'M' is statute miles (default)                         :*/
+/*::                  'K' is kilometers                                      :*/
+/*::                  'N' is nautical miles                                  :*/
+/*::  Worldwide cities and other features databases with latitude longitude  :*/
+/*::  are available at https://www.geodatasource.com                          :*/
+/*::                                                                         :*/
+/*::  For enquiries, please contact sales@geodatasource.com                  :*/
+/*::                                                                         :*/
+/*::  Official Web site: https://www.geodatasource.com                        :*/
+/*::                                                                         :*/
+/*::         GeoDataSource.com (C) All Rights Reserved 2018                  :*/
+/*::                                                                         :*/
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+function distance($lat1, $lon1, $lat2, $lon2, $unit) {
+  if (($lat1 == $lat2) && ($lon1 == $lon2)) {
+    return 0;
+  }
+  else {
+    $theta = $lon1 - $lon2;
+    $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+    $dist = acos($dist);
+    $dist = rad2deg($dist);
+    $miles = $dist * 60 * 1.1515;
+    $unit = strtoupper($unit);
+
+    if ($unit == "K") {
+      $km= $miles * 1.609344;
+      return round($km,0,PHP_ROUND_HALF_EVEN); 
+    } else if ($unit == "N") {
+      return ($miles * 0.8684);
+    } else {
+      return $miles;
+    }
+  }
+}
+
+//echo distance(32.9697, -96.80322, 29.46786, -98.53506, "M") . " Miles<br>";
+//echo distance(32.9697, -96.80322, 29.46786, -98.53506, "K") . " Kilometers<br>";
+//echo distance(32.9697, -96.80322, 29.46786, -98.53506, "N") . " Nautical Miles<br>";
+
+
 
 foreach ($validRows as $spot)
 {
   
+  $distance = locator($spot['locator']);
+
+  $dist = (explode(",",$distance));
+
+
 
 echo "L.marker([".locator($spot['locator'])."], {icon: redIcon}).bindPopup('"
 
@@ -131,6 +190,7 @@ echo "L.marker([".locator($spot['locator'])."], {icon: redIcon}).bindPopup('"
 ."Frequency: ".$spot['freq']."<br>"
 ."Mode: ".$spot['mode']."<br>"
 ."SNR: ".$spot['sNR']."<br>"
+."Distance:".distance($dist[0], $dist[1], 51.506543, -0.177797, "K") ." Km<br>"
 ."Date Time: ".gmdate("Y-m-d H:i:s", $spot['time'])."').addTo(map);";
 
 
