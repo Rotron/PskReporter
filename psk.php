@@ -126,14 +126,14 @@ foreach ($validRows as $spot)
 
 echo "L.marker([".locator($spot['locator'])."], {icon: redIcon}).bindPopup('"
 
-."Receiver Callsign: <a href='https://www.qrz.com/lookup?tquery=".$spot['dx']."&mode=callsign' target='_blank'>".$spot['dx']."</a><br>"
+."Receiver Callsign:".$spot['dx']."</a><br>"
 ."Sender Callsign: ".$spot['op']."<br>"
 ."Frequency: ".$spot['freq']."<br>"
 ."Mode: ".$spot['mode']."<br>"
 ."SNR: ".$spot['sNR']."<br>"
 ."Date Time: ".gmdate("Y-m-d H:i:s", $spot['time'])."').addTo(map);";
 
-//echo  locator($spot['locator']) . "', '" . $spot['dx'] . "', '" . $spot['op'] . "', '" . $spot['freq'] . "', '" . $spot['mode'] . "','" . date('Y-m-d h:i:s', $spot['time']);
+
 
 }
 
