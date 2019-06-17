@@ -24,7 +24,8 @@
       }
    </style>
 
-   
+ <script src="loca.js"></script>
+ <script src="Leaflet.Geodesic.js"></script>
 </head>
 <body onbeforeunload="return myFunction()">
 
@@ -32,7 +33,14 @@
 
 <?php
 
-$string = @file_get_contents("https://pskreporter.info/cgi-bin/pskquery5.pl?encap=1&callback=doNothing&senderCallsign=m2xxx");
+$string = @file_get_contents("https://pskreporter.info/cgi-bin/pskquery5.pl?encap=1&callback=doNothing&senderCallsign=TF3JB");
+
+
+
+
+
+
+
 
 if ($string === FALSE) { 
    echo "TRY IN 5 MINUTES";
@@ -75,7 +83,7 @@ foreach ($results['receptionReport'] as $row)
 ?>
 
 <script>
-   var map = L.map('map').setView([51.5, -0.09], 13);
+   var map = L.map('map').setView([51.506543, -0.177797], 4);
 
    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -86,7 +94,7 @@ foreach ($results['receptionReport'] as $row)
          /*shadowUrl: 'leaf-shadow.png',*/
          iconSize:     [32, 32],
       /*   shadowSize:   [50, 64],*/
-         iconAnchor:   [22, 94],
+       /*  iconAnchor:   [22, 94],*/
         /* shadowAnchor: [4, 62],*/
          popupAnchor:  [-3, -76]
       }
@@ -104,17 +112,11 @@ foreach ($results['receptionReport'] as $row)
 
 function locator($loc){
 
-$lat= 
-(ord(substr($loc, 1, 1))-65) * 10 - 90 +
-(ord(substr($loc, 3, 1))-48) +
-(ord(substr($loc, 5, 1))-65) / 24 + 1/48;
-$lng= 
-(ord(substr($loc, 0, 1))-65) * 20 - 180 +
-(ord(substr($loc, 2, 1))-48) * 2 +
-(ord(substr($loc, 4, 1))-65) / 12 + 1/24;
+$lat= (ord(substr($loc, 1, 1))-65) * 10 - 90 + (ord(substr($loc, 3, 1))-48) + (ord(substr($loc, 5, 1))-65) / 24 + 1/48;
+$lng= (ord(substr($loc, 0, 1))-65) * 20 - 180 + (ord(substr($loc, 2, 1))-48) * 2 + (ord(substr($loc, 4, 1))-65) / 12 + 1/24;
 
 return $lat .", ".$lng;
-
+//echo round($lat + 0.02,3) .", ".round($lng - 0.04 ,3);
 
 }
 
@@ -173,6 +175,17 @@ function distance($lat1, $lon1, $lat2, $lon2, $unit) {
 //echo distance(32.9697, -96.80322, 29.46786, -98.53506, "N") . " Nautical Miles<br>";
 
 
+/*locator js
+var C = L.marker([51.508278, -0.181064]).addTo(map);
+    var D = L.marker([21.508278, -20.281064]).addTo(map);
+
+    L.geodesic([[C.getLatLng(), D.getLatLng()]], {
+      weight: 1,
+      opacity: 0.5,
+      color: 'blue',
+      steps: 50
+    }).addTo(map);
+*/
 
 foreach ($validRows as $spot)
 {
@@ -183,15 +196,20 @@ foreach ($validRows as $spot)
 
 
 
-echo "L.marker([".locator($spot['locator'])."], {icon: redIcon}).bindPopup('"
+//echo "L.marker([".locator($spot['locator'])."], {icon: redIcon}).bindPopup('"
 
+
+
+//echo "L.marker([".locator($spot['locator'])."]).addTo(map).bindPopup('"
+echo "L.marker(get_grid_square("."'".$spot['locator']."'"."),{icon: redIcon}).addTo(map).bindPopup('"
+//echo "L.marker(get_grid_square('".$spot['locator']."').addTo(map).bindPopup('"
 ."Receiver Callsign:".$spot['dx']."</a><br>"
 ."Sender Callsign: ".$spot['op']."<br>"
 ."Frequency: ".$spot['freq']."<br>"
 ."Mode: ".$spot['mode']."<br>"
 ."SNR: ".$spot['sNR']."<br>"
 ."Distance:".distance($dist[0], $dist[1], 51.506543, -0.177797, "K") ." Km<br>"
-."Date Time: ".gmdate("Y-m-d H:i:s", $spot['time'])."').addTo(map);";
+."Date Time: ".gmdate("Y-m-d H:i:s", $spot['time'])."');";
 
 
 
@@ -207,6 +225,12 @@ echo "</script>";
 
 
 <script language="javascript">
+
+
+
+
+
+
 setTimeout(function(){
    window.location.reload(1);
 }, 300000);
