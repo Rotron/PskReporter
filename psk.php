@@ -31,13 +31,28 @@
 
 <div id='map'></div>
 
+
+
+
+
+
+
+
 <?php
 
-$string = @file_get_contents("https://pskreporter.info/cgi-bin/pskquery5.pl?encap=1&callback=doNothing&senderCallsign=TF3JB");
+
+if (isset($_GET['call'])) {
+    //echo $_GET['call'];
 
 
 
 
+$string = @file_get_contents("https://pskreporter.info/cgi-bin/pskquery5.pl?encap=1&callback=doNothing&senderCallsign=".$_GET['call']);
+
+//$string = @file_get_contents("log.txt");
+
+$mainspotlat = "51.506543";
+$mainspotlon = "-0.177797";
 
 
 
@@ -49,6 +64,9 @@ if ($string === FALSE) {
 } 
 
 
+} else {
+ echo "set your callsign";
+}
 
 
 function suca($string)
@@ -66,10 +84,6 @@ foreach ($results['receptionReport'] as $row)
       $spot = array();
 
 
-
-
-
-
       $spot['locator'] = $row['receiverLocator'];
       $spot['op'] = $row['senderCallsign'];
       $spot['dx'] = $row['receiverCallsign'];
@@ -83,22 +97,23 @@ foreach ($results['receptionReport'] as $row)
 ?>
 
 <script>
-   var map = L.map('map').setView([51.506543, -0.177797], 4);
+    var map = L.map('map').setView([51.506543, -0.177797], 4);
+    var C = L.marker([51.506543, -0.177797]).addTo(map);
 
-   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-   }).addTo(map);
+    }).addTo(map);
 
-   var LeafIcon = L.Icon.extend({
-      options: {
-         /*shadowUrl: 'leaf-shadow.png',*/
-         iconSize:     [32, 32],
-      /*   shadowSize:   [50, 64],*/
-       /*  iconAnchor:   [22, 94],*/
-        /* shadowAnchor: [4, 62],*/
+    var LeafIcon = L.Icon.extend({
+        options: {
+       /*.  shadowUrl: 'leaf-shadow.png',*/
+            iconSize:     [32, 32],
+       /*   shadowSize:   [50, 64],*/
+       /*   iconAnchor:   [22, 94],*/
+       /*   shadowAnchor: [4, 62],*/
          popupAnchor:  [-3, -76]
-      }
-   });
+        }
+    });
 
    var  redIcon = new LeafIcon({iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEIUlEQVR4nMWXTWxUVRTHf+f2TTsNtmgjSNCYoFSM9oPOu2/SlBLFREcxuNJE3fmx0o2yMCYmRGPcSqILN25MlLgyYAkLEksktQ5vbiakioijGAUkWKIOtLZTOve4mNZM63SGyoj/zWTOvff8f/e98867T1SV6yVrbUpE9gJFEXkxjuMzwfUy7+npaW1vb39XVYcWQt8Cr/ynAAMDA91BEGRUNZNMJodUdbpq+GeApgIMDg52zs/PPwBkgExLS0uHqh4SkQ/a2tqenp+fl3K5/BxQnJmZ+RBArqUGRMREURR67zMLpoPAKWDEGDOSy+Wyqurr5lgtQCqV2igiDwEZEXkQ6FDVoyIy0tLSMnLs2LEfV7WJRgA7duxITk1NbVfVxV32ABeBQwumh7PZ7KVV7aIeQBRFA+VyeYOIbDHGZFT1PqAd+AYYEZER59yXjS7tvwKw1uaBgYW/XlVHRWTEGHMwjuPTzTBcEcBaezdwsmpsFtgG/NlMwyAIprLZ7NklAFEUPamq7wDrmmlWRxdE5KVcLvexpFKpXSLy6XUyXiJVfcwYY/b8H+YAxpg9gar2LosXRGS/qu4E7l1FvhlV/UJEciJyUlXvAiIqdXRDrQWq2hsAbVWxi8VisbdQKJRE5NUwDL8HNjVyFpGjIvJMrSdl69attyYSifdV9eEaS9vMskC2UCiUFug8MNrIXFX3OufuD4LgD2vtm9baCWvtlLX2RBiGbwdB4HO53CMi8kZN+DAMqztRyXu/JZ/P/9Tf378+kUicAm6s438cSDvnrjQCFREThuHnwHA9AIArQBZIs/T21FJYLBZPdHZ2HhSRjjrz5oBdwM1AAZDFgVqv4wSwvYExwKRzLp9Op+/w3n92FfNvd859Za39DthSD2BaREYX3gGddRLmF343UDnd1JUxpgtARHKquiLAtPd+Uz6fnxweHu6YnZ39gRW6o4j8AuC9f43Ko1ZX3vuvgWFVPVsdXwIgIqP5fH4SYGxs7LK19gDw/Ao5ewGcc482Mq+WqvaL/F0C/yjCS8lk8raxsbHL3d3dbWvXrj0NbFwhV4nKYWSziHxCVWHVkjHm2TiOx621k1SKsSYAwCRwANhZx3xRLzjn3oui6HHvfc1uByAic865fVEUPaWq+5aM1QBYjaaNMX1xHJ8eGhrqKpVKO6m6rSKiwGHn3Pl0Or3Be38C6KpOsLwTrlZrvPf7U6nUPePj478FQRCLSJcxxgLrvPfHnXPnrbV3eu8PLDeHa78CiyoBrxtjPorj+MxiMJVKbTTGPAG8BayptVDCMLwArG8CxKIuUjmabwZuaTD3VyMiR5poDpUK33YV5ojIEVMul3cD55oMcTU6Vy6Xd4uq0tfXd1Nra+vLVL5s6rXfZugSkJ2bm9s7MTHx+zV9mjVDfwF4y628AaWdvAAAAABJRU5ErkJggg=='}) ;
 
@@ -186,6 +201,27 @@ var C = L.marker([51.508278, -0.181064]).addTo(map);
       steps: 50
     }).addTo(map);
 */
+/*
+echo "
+    var C = L.marker([51.508278, -0.181064]).addTo(map);
+    var D = L.marker([21.508278, -20.281064]).addTo(map);
+
+    L.geodesic([[C.getLatLng(), D.getLatLng()]], {
+      weight: 1,
+      opacity: 0.5,
+      color: 'blue',
+      steps: 50
+    }).addTo(map);
+";
+*/
+
+$mainspotlat = "51.506543";
+$mainspotlon = "-0.177797";
+
+
+echo "
+       L.geodesic([
+";
 
 foreach ($validRows as $spot)
 {
@@ -201,23 +237,48 @@ foreach ($validRows as $spot)
 
 
 //echo "L.marker([".locator($spot['locator'])."]).addTo(map).bindPopup('"
-echo "L.marker(get_grid_square("."'".$spot['locator']."'"."),{icon: redIcon}).addTo(map).bindPopup('"
+$dio =  "[C.getLatLng(),L.marker(get_grid_square("."'".$spot['locator']."'"."),{icon: redIcon}).addTo(map).bindPopup('"
 //echo "L.marker(get_grid_square('".$spot['locator']."').addTo(map).bindPopup('"
 ."Receiver Callsign:".$spot['dx']."</a><br>"
 ."Sender Callsign: ".$spot['op']."<br>"
 ."Frequency: ".$spot['freq']."<br>"
 ."Mode: ".$spot['mode']."<br>"
 ."SNR: ".$spot['sNR']."<br>"
-."Distance:".distance($dist[0], $dist[1], 51.506543, -0.177797, "K") ." Km<br>"
-."Date Time: ".gmdate("Y-m-d H:i:s", $spot['time'])."');";
+."Distance:".distance($dist[0], $dist[1], $mainspotlat, $mainspotlon, "K") ." Km<br>"
+."Date Time: ".gmdate("Y-m-d H:i:s", $spot['time'])."')";
 
 
+
+
+
+$vaia= $dio.".getLatLng()],";
+
+//$vaia = substr($vaia, 0, -1);
+
+echo $vaia;
 
 }
 
 
 }
+
+
+
+
+
+echo "], {
+      weight: 2,
+      opacity: 0.5,
+      color: 'blue',
+      steps: 50
+    }).addTo(map);";
+
+
+
 echo "</script>";
+
+
+
 ?>
 
 
