@@ -11,7 +11,7 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
-
+<script src="https://unpkg.com/@joergdietrich/leaflet.terminator"></script>
 
    <style>
       html, body {
@@ -26,6 +26,8 @@
 
  <script src="loca.js"></script>
  <script src="Leaflet.Geodesic.js"></script>
+
+
 </head>
 <body onbeforeunload="return myFunction()">
 
@@ -41,15 +43,17 @@
 <?php
 
 
+
+
 if (isset($_GET['call'])) {
     //echo $_GET['call'];
 
 
 
 
-$string = @file_get_contents("https://pskreporter.info/cgi-bin/pskquery5.pl?encap=1&callback=doNothing&senderCallsign=".$_GET['call']);
+//$string = @file_get_contents("https://pskreporter.info/cgi-bin/pskquery5.pl?encap=1&callback=doNothing&senderCallsign=".$_GET['call']);
 
-//$string = @file_get_contents("log.txt");
+$string = @file_get_contents("log.txt");
 
 $mainspotlat = "51.506543";
 $mainspotlon = "-0.177797";
@@ -99,7 +103,7 @@ foreach ($results['receptionReport'] as $row)
 <script>
     var map = L.map('map').setView([51.506543, -0.177797], 4);
     var C = L.marker([51.506543, -0.177797]).addTo(map);
-
+    L.terminator().addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
@@ -302,6 +306,7 @@ function myFunction() {
 }
 
 </script>
+
 
 
 </body>
