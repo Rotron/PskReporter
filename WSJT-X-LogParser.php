@@ -71,3 +71,5 @@ while(true){
 
 
 
+
+//Test coordinates on map: https://www.gpsvisualizer.com/map?output_geocoder
