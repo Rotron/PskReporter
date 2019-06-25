@@ -59,6 +59,8 @@ foreach($logfile as $ora_book) {
 
 
 while(true){
+	system('clear');
+
 	log_reader();
 	sleep(15);
 }
